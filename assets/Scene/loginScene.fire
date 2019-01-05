@@ -545,7 +545,7 @@
     "target": {
       "__id__": 2
     },
-    "component": "aliensbot_cocos",
+    "component": "aliensboot_cocos",
     "handler": "login",
     "customEventData": ""
   },
@@ -566,7 +566,7 @@
     "_fitHeight": true
   },
   {
-    "__type__": "270c2YxMVZIR4eW4GTCt0lb",
+    "__type__": "bb073uRzl5L2KkfZJtbToSf",
     "_name": "",
     "_objFlags": 0,
     "node": {
@@ -575,7 +575,6 @@
     "_enabled": true,
     "username": {
       "__id__": 7
-    },
-    "wsURL": "ws://127.0.0.1:28107"
+    }
   }
 ]

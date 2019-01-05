@@ -45,19 +45,19 @@ cc.Class({
         }.bind(this))
 
         //登录角色场景
-        aliensBot.invoke("loginRole", {})
+        aliensBoot.invoke("loginRole", {})
     },
 
     registerEvent: function() {
         //处理登录场景成功业务
-        aliensBot.onResponse("scenePush", function(data) {
+        aliensBoot.onResponse("scenePush", function(data) {
             if (this.player == null) {
                 this.player = this.newEntity(data["entity"])
             }
             this.updateInfo(data["spaceID"], this.player.node.getPosition())
         }.bind(this))
 
-        aliensBot.onResponse("entityPush", function(data) {
+        aliensBoot.onResponse("entityPush", function(data) {
             this.updateNeighbors(data["neighbors"])
         }.bind(this))
 
@@ -68,10 +68,10 @@ cc.Class({
     moveSpace: function() {
         let newSpaceID = this.spaceIDEditBox.string
         if (newSpaceID == "" || newSpaceID == this.spaceID) {
-            aliensBot.log("invalid spaceID :" + newSpaceID)
+            aliensBoot.log("invalid spaceID :" + newSpaceID)
             return
         }
-        aliensBot.invoke("moveScene", {"spaceID": newSpaceID})
+        aliensBoot.invoke("moveScene", {"spaceID": newSpaceID})
     },
 
     updateInfo: function(spaceID, pos) {
@@ -92,7 +92,7 @@ cc.Class({
         for (var x = 0; x < numXSlots; x++) {
             for (var y = 0; y < numYSlots; y++) {
                 graphics.rect(x * this.towerRange, y * this.towerRange, this.towerRange,this.towerRange);
-                aliensBot.log("init tower ", x , y)
+                aliensBoot.log("init tower ", x , y)
             }
         }
         graphics.stroke();

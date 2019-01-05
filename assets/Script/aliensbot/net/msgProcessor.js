@@ -9,7 +9,7 @@ processor.init = function (protocol, mapping) {
     this.idNameMapping = {};   //msgID - moduleName
     this.handleIDMapping = {}; //handlerName - msgID
 
-    //var protocol = require("assets/Script/aliensBot/protocol/protocol");
+    //var protocol = require("assets/Script/aliensBoot/protocol/protocol");
     this.responseDecoder = protocol["Response"]["decode"];
     this.requestEncoder = protocol["Request"];
 

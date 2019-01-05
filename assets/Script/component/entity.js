@@ -13,18 +13,13 @@ cc.Class({
         speed: 100, //移动速度
 
         viewRadius : 100 //视野范围
-        // id: "",  //entity id
-        // attrs:{},  //entity attrs
     },
 
     init: function(entityData) {
         this.id = entityData["id"]
         this.attrs = entityData["attrs"]
         let position = entityData["position"]
-        // if (position.x != 0 || position.y != 0) {
-        //
-        // }
-        //this.moveTo(entityData["position"])
+
         this.node.x = position.x
         this.node.x = position.y
         this.nickname.string = "" + this.id
@@ -32,10 +27,8 @@ cc.Class({
 
     // use this for initialization
     onLoad: function () {
-
         let graphics = this.view.getComponent(cc.Graphics)
         graphics.rect(this.view.x, this.view.y, this.viewRadius * 2, this.viewRadius * 2);
-
     },
 
 
@@ -54,7 +47,7 @@ cc.Class({
         var action = cc.moveTo(playTime, position);
 
         cc.log("", "玩家坐标", po1.x,po1.y, " => " + position.x,position.y)
-        //cc.log("移动时间： ",playTime)
+
         //移动前停止所有动作
         this.node.stopAllActions()
         //进行移动
@@ -66,7 +59,7 @@ cc.Class({
 
     //调用服务端实体方法
     entityCall: function(method, ...args) {
-        aliensBot.entityCall(this.id, method, args)
+        aliensBoot.entityCall(this.id, method, args)
     }
 
 });

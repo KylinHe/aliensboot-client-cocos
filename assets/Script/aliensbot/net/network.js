@@ -1,34 +1,10 @@
-//var aliensNetwork = window.aliensNetwork = window.aliensNetwork || {};
+var network = {};
 
-var network = {
-    wsURL:""
-};
-
-
-//网络配置
-network.config = {
-
-    heartbeat: {
-        interval:10, //心跳间隔时间 0不开启心跳
-        opt:true, //是否开启心跳优化、正常消息包参与tick计数、减少消息传输量,
-        timeout: 5, //心跳超时时间
-    },
-
-    reconnect:{
-        interval:5, //重连间隔时间
-        maxCount:3 //最大重连次数
-    }
-};
-
-network.init = function (wsURL, msgProcessor, config) {
-    this.connect(wsURL);
+network.init = function (msgProcessor, config) {
+    this.updateConfig(config)
     this.processor = msgProcessor;
     this.ready = false
-
-    if (config != null) {
-        this.updateConfig(config)
-
-    }
+    this.connect();
 
     // if (network.config.heartbeat != null) {
     //     this.heartbeatTimer = setInterval(this.tick.bind(this), this.config.heartbeat.interval * 1000)
@@ -38,7 +14,6 @@ network.init = function (wsURL, msgProcessor, config) {
 
 network.updateConfig =function(config) {
     //TODO 检查配置对象
-
     this.config = config
 };
 
@@ -63,14 +38,13 @@ network.onHeartbeat = function() {
 
 };
 
-network.connect = function (socketUrl) {
-    network.wsURL = socketUrl
+network.connect = function () {
     if (this.web_socket) {
         this.web_socket.close();
         this.web_socket = null;
     }
 
-    this.web_socket = new WebSocket(socketUrl);
+    this.web_socket = new WebSocket(this.config.wsUrl);
     this.web_socket.binaryType = "arraybuffer";
     this.web_socket.onmessage = function (event) {
         var info = this.processor.decode(event.data);
@@ -84,20 +58,20 @@ network.connect = function (socketUrl) {
     }.bind(this);
 
     this.web_socket.onopen = function (event) {
-        cc.log("onopen------------");
+        //cc.log("onopen------------");
         this.ready = true;
         if (this.msgCb) this.msgCb("online", {});
     }.bind(this);
 
     this.web_socket.onclose = function (event) {
-        cc.log("onclose------------");
+        //cc.log("onclose------------");
         this.web_socket = null;
 
         if (this.msgCb) this.msgCb("offline", {});
     }.bind(this);
 
     this.web_socket.onerror = function (event) {
-        cc.log("onerror------------");
+        //cc.log("onerror------------");
         if (this.msgCb) this.msgCb("offline", {});
     }.bind(this);
 
