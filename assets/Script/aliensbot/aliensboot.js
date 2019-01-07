@@ -10,7 +10,7 @@ aliensBoot.init = function () {
     this.network = require("net/network");
     let config = require("config/config")
 
-    processor.init(protocol, config.routes)
+    processor.init(protocol, config.network.routes)
     this.network.init(processor, config.network)
 
     this.network.regMsgCallback(aliensBoot.onMsg.bind(this))

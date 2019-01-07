@@ -11,11 +11,10 @@ config.network = {
     reconnect:{
         interval:5, //重连间隔时间
         maxCount:3 //最大重连次数
-    }
+    },
+
+    //消息路由
+    routes : {gate: 1000, passport: 1, game: 2, room: 3, hall: 8, scene: 9}
 }
-
-//消息路由
-config.routes = {gate: 1000, passport: 1, game: 2, room: 3, hall: 8, scene: 9}
-
 
 module.exports = config;
