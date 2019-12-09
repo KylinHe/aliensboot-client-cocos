@@ -30,36 +30,36 @@ cc.Class({
         //绘制地图
         this.mash()
 
-        let manager = cc.director.getCollisionManager();
-        manager.enabledDebugDraw = true;
-        manager.enabled = true;
-
-        this.node.on(cc.Node.EventType.TOUCH_START, function(event){
-            //获取当前点击的全局坐标
-            var temp = event.getLocation()
-            if (this.player != null) {
-                var newPos = this.node.parent.convertToNodeSpaceAR(temp)
-                this.player.moveTo(newPos)
-                this.updateInfo(this.spaceID, newPos)
-            }
-        }.bind(this))
-
-        //登录角色场景
-        aliensBoot.invoke("loginRole", {})
+        // let manager = cc.director.getCollisionManager();
+        // manager.enabledDebugDraw = true;
+        // manager.enabled = true;
+        //
+        // this.node.on(cc.Node.EventType.TOUCH_START, function(event){
+        //     //获取当前点击的全局坐标
+        //     var temp = event.getLocation()
+        //     if (this.player != null) {
+        //         var newPos = this.node.parent.convertToNodeSpaceAR(temp)
+        //         this.player.moveTo(newPos)
+        //         this.updateInfo(this.spaceID, newPos)
+        //     }
+        // }.bind(this))
+        //
+        // //登录角色场景
+        // aliensBoot.invoke("loginRole", {})
     },
 
     registerEvent: function() {
         //处理登录场景成功业务
-        aliensBoot.onResponse("scenePush", function(data) {
-            if (this.player == null) {
-                this.player = this.newEntity(data["entity"])
-            }
-            this.updateInfo(data["spaceID"], this.player.node.getPosition())
-        }.bind(this))
-
-        aliensBoot.onResponse("entityPush", function(data) {
-            this.updateNeighbors(data["neighbors"])
-        }.bind(this))
+        // aliensBoot.onResponse("scenePush", function(data) {
+        //     if (this.player == null) {
+        //         this.player = this.newEntity(data["entity"])
+        //     }
+        //     this.updateInfo(data["spaceID"], this.player.node.getPosition())
+        // }.bind(this))
+        //
+        // aliensBoot.onResponse("entityPush", function(data) {
+        //     this.updateNeighbors(data["neighbors"])
+        // }.bind(this))
 
     },
 

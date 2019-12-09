@@ -50,7 +50,7 @@ cc.Class({
                     }
                     aliensBoot.log("login success")
                     aliensBoot.openReconnect();
-                    cc.director.loadScene("spaceScene");
+                    cc.director.loadScene("testScene");
                 })
             }, () => {
                 aliensBoot.log('登录连接失败!');

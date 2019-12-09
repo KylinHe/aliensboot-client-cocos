@@ -15,8 +15,8 @@ const abConfig = {
         // 心跳检查 无则不开启
         heartCheck: {
             opt: true, // 是否开启心跳优化、正常消息包参与tick计数、减少消息传输量,
-            interval: 5, // 发送心跳间隔时间 在成功收到服务端心跳响应才会发下一个心跳请求
-            timeout: 8, // 心跳检查超时时间 心跳超过此时间没有响应关闭退出
+            interval: 8, // 发送心跳间隔时间 在成功收到服务端心跳响应才会发下一个心跳请求
+            timeout: 15, // 心跳检查超时时间 心跳超过此时间没有响应关闭退出
         },
 
         // 断线重连 无则不开启
@@ -27,7 +27,7 @@ const abConfig = {
 
         // 消息路由 与服务器一致 参考服务端配置 gate.yml-routes
         routes: {
-            gate: 1000, passport: 1, game: 2, battle: 3, chat: 4, mail: 5, match: 6, explore: 7, fight: 8, social: 9, union: 10,
+            gate: 1000, passport: 1, game: 2, battle: 3, chat: 4, mail: 5, match: 6, explore: 7, fight: 8, social: 9, union: 10, center: 11,
         },
     },
 };

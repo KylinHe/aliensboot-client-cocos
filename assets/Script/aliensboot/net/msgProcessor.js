@@ -33,11 +33,12 @@ msgProcessor.init = function (protocol, mapping) {
 
 
 // object -> byte data
-msgProcessor.encode = function(handlerName, object) {
+msgProcessor.encode = function(handlerName, object, seqID) {
     // 心跳包
     if (handlerName === 'heartbeat') {
-        const data = new Uint8Array(2);
+        const data = new Uint8Array(6);
         data.set([0, 0], 0);
+        data.set([0, 0, 0, 0], 2);
         return data.buffer;
     }
 
@@ -47,14 +48,16 @@ msgProcessor.encode = function(handlerName, object) {
         return;
     }
     // var msgID = this.nameIDMapping[moduleName];
+    // eslint-disable-next-line new-cap
     const c2gsMsg = new this.requestEncoder(object);
     const encodeData = c2gsMsg['encode']();
     const arrayBuffer = encodeData['toArrayBuffer']();
-    const array = new Uint8Array(arrayBuffer);
-    const data = new Uint8Array(array.byteLength + 2);
+    const protoData = new Uint8Array(arrayBuffer);
+    const data = new Uint8Array(protoData.byteLength + 6);
 
-    data.set([msgID, 0], 0);
-    data.set(array, 2);
+    data.set([msgID, msgID >> 8], 0);
+    data.set([seqID, seqID >> 8, seqID >> 16, seqID >> 24], 2);
+    data.set(protoData, 6);
 
     return data.buffer;
 };
@@ -66,21 +69,15 @@ function uint8arrayToStringMethod(myUint8Arr) {
 // byte data -> object
 msgProcessor.decode = function (data) {
     const array = new Uint8Array(data);
-    //  |msgID-2|protobuf data|
-
-    const idData = new Uint8Array(2);
-    idData.set(array.subarray(0, 2), 0);
-
-    const id = idData[0] | idData[1] << 8;
-
+    //  |msgID-2|msgSeqID-4|protobuf data|
+    const id = array[0] | array[1] << 8;
+    const seqId = array[2] | array[3] << 8 | array[4] << 16 | array[5] << 24;
     // 心跳包
     if (id === 0) {
-        return ['', 'heartbeat', {}];
+        return [['', 'heartbeat', {}]];
     }
-
-    const newData = new Uint8Array(array.byteLength - 2);
-    newData.set(array.subarray(2, array.byteLength), 0);
-
+    const protoData = new Uint8Array(array.byteLength - 6);
+    protoData.set(array.subarray(6, array.byteLength), 0);
 
     // var idArray = Array.from(idData)
     // var id = idData[0];
@@ -88,7 +85,7 @@ msgProcessor.decode = function (data) {
 
     let moduleName = '';
 
-    const msg = this.responseDecoder(newData.buffer);
+    const msg = this.responseDecoder(protoData.buffer);
 
     let msgName = '';
     let msgContent;
@@ -115,11 +112,11 @@ msgProcessor.decode = function (data) {
             }
         }
     }
-    if (!msgContent || msgContent === '') {
-        aliensBoot.log(`unexpect message id ----${id}`);
-    }
+    // if (!msgContent || msgContent === '') {
+    //     aliensBoot.log(`unexpect message id ----${id}`);
+    // }
     if (msgName && msgContent) {
-        ret[0] = [moduleName, msgName, msgContent];
+        ret[0] = [moduleName, msgName, msgContent, seqId];
     }
     // 是否有推送消息
     if (moduleName.length > 0) {
@@ -135,7 +132,7 @@ msgProcessor.decode = function (data) {
                     continue;
                 }
                 const idx = ret.length;
-                ret[idx] = [moduleName, msgName1, msgContent];
+                ret[idx] = [moduleName, msgName1, msgContent, seqId];
             }
         }
     }

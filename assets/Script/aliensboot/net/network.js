@@ -21,6 +21,8 @@ network.init = function (config) {
     msgProcessor.init(protocol, config.routes);
     this._processor = msgProcessor;
     this._connected = false;
+    this.sessionId = 0; // 会话id 自增长
+    this.sessionData = {}; // 记录上次的请求会话
 };
 
 // 心跳检查
@@ -36,12 +38,12 @@ network.heartCheck = function () {
 
     this._heartbeatTimer = setTimeout(() => {
         // 发送心跳包
-        // self.heartbeat();
+        self.heartbeat();
         // 开启超时监听 超时时间没有响应则关闭连接 触发重连
-        // self._timeoutTimer = setTimeout(() => {
-        //     aliensBoot.log(`heartbeat timeout:${heartCheckConfig.timeout}`);
-        //     self.close();
-        // }, heartCheckConfig.timeout * 1000);
+        self._timeoutTimer = setTimeout(() => {
+            aliensBoot.log(`heartbeat timeout:${heartCheckConfig.timeout}`);
+            self.close();
+        }, heartCheckConfig.timeout * 1000);
     }, heartCheckConfig.interval * 1000);
 };
 
@@ -68,7 +70,6 @@ network.onHeartbeat = function () {
 };
 
 network.connect = function (success, failed) {
-    aliensBoot.log(`connecting to ${this.config.wsUrl}`);
     // 防止重复连接
     if (this.isConnected()) {
         if (success) {
@@ -79,6 +80,7 @@ network.connect = function (success, failed) {
         // this.web_socket.close();
         // this.web_socket = null;
     }
+    aliensBoot.log(`connecting to ${this.config.wsUrl}`);
     this.web_socket = new WebSocket(this.config.wsUrl);
     this.web_socket.binaryType = 'arraybuffer';
     this.web_socket.onmessage = function (event) {
@@ -94,7 +96,10 @@ network.connect = function (success, failed) {
                 continue;
             }
             const msgContent = info[2];
-            if (this._msgCb) this._msgCb(msgName, msgContent);
+            const sessionId = info[3];
+            const sessionData = this.sessionData[sessionId];
+            delete this.sessionData[sessionId];
+            if (this._msgCb) this._msgCb(msgName, msgContent, sessionData);
         }
     }.bind(this);
 
@@ -167,15 +172,25 @@ network.close = function () {
     }
 };
 
-network.send = function (reqName, originData) {
+network._incrementSessionId = function () {
+    this.sessionId++;
+    return this.sessionId;
+};
+
+network.send = function (reqName, originData, sessionData) {
     if (!this.isConnected()) {
         console.error('websocket is not open');
         return;
     }
     const data = {};
     data[reqName] = originData;
-
-    const sendData = this._processor.encode(reqName, data);
+    const sessionId = this._incrementSessionId();
+    // todo 超时处理清除过期会话
+    if (sessionData) {
+        this.sessionData[sessionId] = sessionData;
+    }
+    // aliensBoot.log(this.sessionData);
+    const sendData = this._processor.encode(reqName, data, sessionId);
     const err = this.web_socket.send(sendData);
 
     if (err) {
